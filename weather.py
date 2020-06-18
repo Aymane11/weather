@@ -1,14 +1,29 @@
+# -*- coding: utf-8 -*-
+"""
+CLI tool fetching weather in a city using openweathermap API.
+
+usage: weather.py [-h] [-c]
+optional arguments:
+  -h, --help    show this help message and exit
+  -c, --config  Create or edit config file (city - units - [API key])
+
+
+<Open Weather Map> http://openweathermap.org/.
+"""
+
 import datetime
 import json
 import urllib.request
-import sys
-import pprint
 from configparser import ConfigParser, NoSectionError
 import argparse
 from os import path
 import getpass 
-  
+
 def save_config():
+    """
+    Save configuration file
+    :return:
+    """
     city = input("City Name : ")
     units = input("Units system metric or imperial [m/i]: ")
     while True:
@@ -35,6 +50,10 @@ def save_config():
 
 
 def load_config():
+    """
+    Load configuration file.
+    :return:
+    """
     if path.exists('config.ini') == False:
         save_config()
     else :
@@ -60,11 +79,11 @@ def load_config():
                         exit(1)
 
         except urllib.error.HTTPError as apiError:
-            print('Error: Missing or Unauthorized API!', apiError)
+            print('Error: Missing or Unauthorized API!')
             exit(1)
 
         except IOError as e:
-            print('Error: No internet! ', e)
+            print('Error: No internet! ')
             exit(1)
 
         except NoSectionError as fi:
@@ -81,8 +100,14 @@ def load_config():
                     else:
                         exit(1)
 
-
 def build_url(city, unit, key):
+    """
+    Build API call url.
+    :param city: city name.
+    :param unit: units system (metric or imperial).
+    :param key: API key.
+    :return: API call URL.
+    """
     api_url = 'http://api.openweathermap.org/data/2.5/weather?q='
     if unit == 'm':
         units = 'metric'
@@ -93,6 +118,11 @@ def build_url(city, unit, key):
 
 
 def fetch_data(full_url):
+    """
+    Sends request to API and recieves weather data, converts it from JSON to dict.
+    :param full_url: API call URL.
+    :return: Data dictionnary.
+    """
     with urllib.request.urlopen(full_url) as url:
         data = url.read().decode('utf-8')
         data_dict = json.loads(data)
@@ -100,13 +130,26 @@ def fetch_data(full_url):
 
 
 def convert_time(time, format):
+    """
+    Converts UNIX timestamp to readable format.
+    :param time: UNIX timestamp.
+    :param format: Day or Full time
+    :return: Readable time format.
+    """
     if format == "h":
         return datetime.datetime.fromtimestamp(time).strftime('%Y-%m-%d %H:%M:%S')
     else:
         return datetime.datetime.fromtimestamp(time).strftime('%Y-%m-%d')
 
 
-def build_dict(data, units):
+def build_dict(data, units, city):
+    """
+    Get necessary data from dictionnary.
+    :param data: data dictionnary.
+    :param units: Units system.
+    :param city: city name.
+    :return: final data dictionnary.
+    """
     sys = data.get('sys')
     main = data.get('main')
     weather = data.get('weather')
@@ -116,6 +159,7 @@ def build_dict(data, units):
     else:
         unit = chr(176)+"F"
     final_data = dict(
+        city = city.capitalize(),
         unit = unit,
         dt = convert_time(data.get('dt'), 'h'),
         day = convert_time(data.get('dt'), 'd'),
@@ -135,14 +179,18 @@ def build_dict(data, units):
     return final_data
 
 
-def display(data, city):
+def display(data):
+    """
+    Displays weather info.
+    :param data: Weather data dictionnary.
+    :return:
+    """
     print('---------------------------------------')
-    print(
-        f"Current weather in: {city.capitalize()}, {data['country']} on {data['day']} :")
+    print(f"Current weather in: {data['city']}, {data['country']} on {data['day']} :")
     print(f"{data['temp']}{data['unit']} - {data['weather_desc']}")
-    print(f"Max: {data['temp_max']}, Min: {data['temp_min']}")
+    print(f"Max: {data['temp_max']}{data['unit']}, Min: {data['temp_min']}{data['unit']}")
     print('')
-    print(f"Cloud: {data['clouds']}%")
+    print(f"Clouds: {data['clouds']}%")
     print(f"Sunrise at: {data['sunrise']}")
     print(f"Sunset at: {data['sunset']}")
     print('')
@@ -151,13 +199,24 @@ def display(data, city):
 
 
 def fetch_and_display(city, units, key):
+    """
+    Fetch, format and display weather data.
+    :param city: City name.
+    :param units: Units system.
+    :param key: API key.
+    :return:
+    """
     url = build_url(city, units, key)
     data = fetch_data(url)
-    final_data = build_dict(data, units)
-    display(final_data, city)
+    final_data = build_dict(data, units, city)
+    display(final_data)
 
 
 def args():
+    """
+    Parse arguments to load or save config or show help.
+    :return:
+    """
     parser = argparse.ArgumentParser(description="Weather via command line ")
     parser.add_argument('-c', '--config', action='store_true',
                         help='Create config file (city - units - API key)')
