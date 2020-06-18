@@ -6,7 +6,7 @@
 - Run the script :gear:
 #### Options
 ```console
-$ python3 weather -h
+$ python3 weather.py -h
 usage: weather.py [-h] [-c]
 
 Weather via command line
