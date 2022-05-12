@@ -6,7 +6,7 @@
 - Python 3 :snake: or later
 - Openweathermap API key :key: (get it from [here](https://openweathermap.org/api))
 - pipenv, to install it use `$ pip install pipenv` (optional)
-##### <small> You can use any virtualenv tool, use the requirements.txt file to install requirements.</small>
+##### <small> You can use any virtualenv tool, use the requirements.txt file to install the necessary dependencies.</small>
 
 ## Usage
 - Install requirements using:
@@ -33,7 +33,7 @@ optional arguments:
 
 ## Example
 <div align="center">
-    <img alt="Demo" src="https://i.imgur.com/SYbfEXo.gif" width=70%">
+    <img alt="Demo" src="https://i.imgur.com/SYbfEXo.gif" width=70%>
 </div>
 
 ## TODO
@@ -51,4 +51,4 @@ optional arguments:
 
 <a href="https://github.com/Aymane11/weather/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/Aymane11/weather"></a>
 
-Distributed under the MIT license. See ``LICENSE`` for more information.
+Distributed under the MIT license. Read the [LICENSE](https://github.com/Aymane11/weather/blob/master/LICENSE) for more informations.
